@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ph="http://xmlns.jcp.org/jsf/composite/pharmacy">
+
+    <h:body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+                <h:form>
+                    <p:panel >
+                        <f:facet name="header" >
+                            <h:outputLabel value="Transfer Issue Reprint" ></h:outputLabel>
+                        </f:facet>
+
+                        <div class="d-flex justify-content-between">
+                            <div >
+                                <p:commandButton 
+                                    ajax="false" 
+                                    icon="fas fa-list"
+                                    class="ui-button-warning mx-2"
+                                    action="/pharmacy/pharmacy_transfer_request_list?faces-redirect=true" 
+                                    actionListener="#{pharmacyBillSearch.makeNull()}" 
+                                    value="Back to Issued List"/>
+                                <p:commandButton 
+                                    value="Back to Transfer Issue by Bill Report" 
+                                    action="#{reportsTransfer.navigateBackToTransferIssueByBill}" 
+                                    ajax="false" 
+                                    icon="fa fa-file-export" 
+                                    class="ui-button-secondary mx-1"></p:commandButton>
+
+                                <p:commandButton 
+                                    ajax="false" 
+                                    value="To Cancel" 
+                                    icon="fas fa-cancel"
+                                    class="ui-button-danger mx-1"
+                                    action="pharmacy_cancel_transfer_issue?faces-redirect=true" 
+                                    rendered="#{pharmacyBillSearch.bill.department eq sessionController.loggedUser.department}" disabled="#{pharmacyBillSearch.bill.cancelled}">                           
+                                </p:commandButton>  
+                            </div>
+
+                            <div class="d-flex m-1">
+                                <p:outputLabel value="Paper Type" class="mt-2"></p:outputLabel>
+                                <p:selectOneMenu value="#{sessionController.departmentPreference.pharmacyBillPaperType}" class="m-1" style="width: 13em;">
+                                    <f:selectItem itemLabel="Please Select Paper Type" />
+                                    <f:selectItems value="#{enumController.paperTypes}" />
+                                </p:selectOneMenu>
+                                <p:commandButton ajax="false" icon="fa fa-sync-alt" class="ui-button m-1" title="Redraw Bill"></p:commandButton>
+                                <p:commandButton 
+                                    value="Print" 
+                                    icon="fas fa-print"
+                                    class="ui-button-info m-1"
+                                    ajax="false" 
+                                    action="#" >
+                                    <p:printer target="gpBillPreview" ></p:printer>
+                                </p:commandButton>
+                            </div>
+                        </div>
+
+                        <h:panelGroup   id="gpBillPreview" class="d-flex justify-content-center">
+                            <h:panelGroup rendered="#{sessionController.loggedPreference.pharmacyBillPaperType eq 'A4Paper'}">
+                                <h:panelGroup rendered="#{sessionController.loggedPreference.grnBillDetailed eq false}" class="noBorder">
+                                    <ph:transferIssue bill="#{pharmacyBillSearch.bill}" duplicate="true"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{sessionController.loggedPreference.grnBillDetailed eq true}" class="noBorder">
+                                    <ph:transferIssue_detailed bill="#{pharmacyBillSearch.bill}"/>
+                                </h:panelGroup>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{sessionController.loggedPreference.pharmacyBillPaperType eq 'PosPaper'}">
+                                <h:panelGroup rendered="#{sessionController.loggedPreference.grnBillDetailed eq false}" >
+                                    <ph:Pharmacy_department_Issue_pos_bill bill="#{pharmacyBillSearch.bill}" duplicate="true"/>
+                                </h:panelGroup>
+                            </h:panelGroup>
+
+                        </h:panelGroup>
+                    </p:panel>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

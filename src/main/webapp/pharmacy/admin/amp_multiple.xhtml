@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/pharmacy/admin/index.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="subcontent">
+        <h:form  >
+
+            <p:commandButton value="Download" ajax="false" >
+                <p:dataExporter fileName="amps" target="tblamps" type="xlsx" ></p:dataExporter>
+            </p:commandButton>
+            
+            <p:dataTable 
+                id="tblamps"
+                value="#{pharmacyController.amps}" 
+                var="i"
+                rowKey="#{i.id}"
+                rows="5"
+                paginator="true" 
+                paginatorPosition="both"
+                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                rowsPerPageTemplate="5,10,1000,{ShowAll|'All'}"
+                >
+                <f:facet name="header">
+                    <h:outputText value="AMP List" ></h:outputText>
+                </f:facet>
+                <p:column 
+                    headerText="Category" 
+                    sortBy="#{i.id}"
+                    filterBy="#{i.id}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.category.name}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="AMP Name" 
+                    sortBy="#{i.name}"
+                    filterBy="#{i.name}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.name}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="AMP Code" 
+                    sortBy="#{i.code}"
+                    filterBy="#{i.code}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.code}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="AMP Barcode" 
+                    sortBy="#{i.barcode}"
+                    filterBy="#{i.barcode}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.barcode}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="VTM" 
+                    sortBy="#{i.vmp.vtm.name}"
+                    filterBy="#{i.vmp.vtm.name}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.vmp.vtm.name}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="VMP" 
+                    sortBy="#{i.vmp.name}"
+                    filterBy="#{i.vmp.name}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.vmp.name}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="Strength" 
+                    sortBy="#{i.dblValue}"
+                    filterBy="#{i.dblValue}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.dblValue}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="Strength Unit" 
+                    sortBy="#{i.strengthUnit.name}"
+                    filterBy="#{i.strengthUnit.name}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.measurementUnit.name}" ></h:outputText>
+                </p:column>
+                <p:column 
+                    headerText="Issue Unit" 
+                    sortBy="#{i.vmp.issueUnit.name}"
+                    filterBy="#{i.vmp.issueUnit.name}"
+                    filterMatchMode="contains">
+                    <h:outputText value="#{i.vmp.issueUnit.name}" ></h:outputText>
+                </p:column>
+
+
+            </p:dataTable>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
