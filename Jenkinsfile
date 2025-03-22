@@ -85,12 +85,12 @@ pipeline {
             cleanWs()
         }
         success {
-            mail to: 'your-email@example.com',
+            mail to: 'shubhamstudy551@gmail.com',
                  subject: "HMIS Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "Build succeeded. Check details at ${env.BUILD_URL}"
         }
         failure {
-            mail to: 'your-email@example.com',
+            mail to: 'shubhamstudy551@gmail.com',
                  subject: "HMIS Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "Build failed. Check details at ${env.BUILD_URL}"
         }
