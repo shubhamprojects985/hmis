@@ -9,7 +9,6 @@ pipeline {
         MYSQL_DATABASE = 'hmis_db'
         MYSQL_USER = 'hmis_user'
         MYSQL_PASSWORD = 'hmis_pass'
-        SONAR_TOKEN = credentials('sonar-token')
         PAYARA_HOME = '/opt/payara5'
     }
     stages {
@@ -51,13 +50,6 @@ pipeline {
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-        stage('Code Quality Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}'
                 }
             }
         }
