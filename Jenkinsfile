@@ -9,7 +9,7 @@ pipeline {
         MYSQL_DATABASE = 'hmis_db'
         MYSQL_USER = 'hmis_user'
         MYSQL_PASSWORD = 'hmis_pass'
-        PAYARA_HOME = '/opt/payara5'
+        PAYARA_HOME = '/opt/payara5' // Adjust this for Windows agents if needed (e.g., 'C:\\payara5')
     }
     stages {
         stage('Checkout') {
@@ -19,7 +19,13 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                script {
+                    if (isUnix()) {
+                        sh 'mvn clean package -DskipTests'
+                    } else {
+                        bat 'mvn clean package -DskipTests'
+                    }
+                }
             }
             post {
                 success {
@@ -31,7 +37,13 @@ pipeline {
             parallel {
                 stage('Unit Tests') {
                     steps {
-                        sh 'mvn test -Dtest=**/*UnitTest.java'
+                        script {
+                            if (isUnix()) {
+                                sh 'mvn test -Dtest=**/*UnitTest.java'
+                            } else {
+                                bat 'mvn test -Dtest=**/*UnitTest.java'
+                            }
+                        }
                     }
                 }
                 stage('Integration Tests') {
@@ -43,7 +55,13 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'mvn verify -Dtest=**/*IntegrationTest.java'
+                        script {
+                            if (isUnix()) {
+                                sh 'mvn verify -Dtest=**/*IntegrationTest.java'
+                            } else {
+                                bat 'mvn verify -Dtest=**/*IntegrationTest.java'
+                            }
+                        }
                     }
                 }
             }
@@ -59,15 +77,30 @@ pipeline {
             }
             steps {
                 script {
-                    sh "${PAYARA_HOME}/bin/asadmin stop-domain"
-                    sh "${PAYARA_HOME}/bin/asadmin deploy --force target/*.war"
-                    sh "${PAYARA_HOME}/bin/asadmin start-domain"
+                    def asadminCmd = isUnix() ? "${PAYARA_HOME}/bin/asadmin" : "${PAYARA_HOME}\\bin\\asadmin.bat"
+                    if (isUnix()) {
+                        sh "${asadminCmd} stop-domain"
+                        sh "${asadminCmd} deploy --force target/*.war"
+                        sh "${asadminCmd} start-domain"
+                    } else {
+                        bat "${asadminCmd} stop-domain"
+                        bat "${asadminCmd} deploy --force target/*.war"
+                        bat "${asadminCmd} start-domain"
+                    }
                 }
             }
             post {
                 failure {
-                    sh "${PAYARA_HOME}/bin/asadmin undeploy hmis"
-                    sh "${PAYARA_HOME}/bin/asadmin deploy --force ${env.WORKSPACE}/previous-successful-build/target/*.war || echo 'No rollback artifact available'"
+                    script {
+                        def asadminCmd = isUnix() ? "${PAYARA_HOME}/bin/asadmin" : "${PAYARA_HOME}\\bin\\asadmin.bat"
+                        if (isUnix()) {
+                            sh "${asadminCmd} undeploy hmis"
+                            sh "${asadminCmd} deploy --force ${env.WORKSPACE}/previous-successful-build/target/*.war || echo 'No rollback artifact available'"
+                        } else {
+                            bat "${asadminCmd} undeploy hmis"
+                            bat "${asadminCmd} deploy --force ${env.WORKSPACE}\\previous-successful-build\\target\\*.war || echo \"No rollback artifact available\""
+                        }
+                    }
                 }
             }
         }
