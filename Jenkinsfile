@@ -14,7 +14,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/shubhamprojects985/hmis.git', branch: 'main'
+                git branch: 'main',
+                    credentialsId: 'github-hmis-credentials',
+                    url: 'https://github.com/shubhamprojects985/hmis.git'
             }
         }
         stage('Build') {
